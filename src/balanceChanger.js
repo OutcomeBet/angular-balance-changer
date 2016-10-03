@@ -41,13 +41,13 @@
 		};
 	}]);
 
-	m.directive('balanceChangerModal', ['BalanceChanger', 'Remote', function(BalanceChanger, Remote) {
+	m.directive('balanceChangerModal', ['BalanceChanger', 'Remote', 'Alert', function(BalanceChanger, Remote, Alert) {
 		return {
 			restrict: 'C',
 			link: function($scope, $el, attrs) {
 				var bc = $scope.balanceChanger = BalanceChanger;
 
-				$scope.save = function() {
+				$scope.change = function() {
 					if(bc.amount <= 0) {
 						$el.modal('toggle');
 						return;
@@ -66,7 +66,7 @@
 							bc.model[bc.balanceField] = data.balanceAfter;
 						});
 						$el.modal('toggle');
-					});
+					}).then(Alert.Small.Simple.Success);
 				};
 			}
 		};
