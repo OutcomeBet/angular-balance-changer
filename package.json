@@ -1,0 +1,31 @@
+{
+	"name": "angular-balance-changer",
+	"version": "1.0.0",
+	"description": "C2 BackOffice angular component for changing balance",
+	"main": "gulpfile.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/OutcomeBet/angular-balance-changer.git"
+	},
+	"keywords": [
+		"angular",
+		"balance",
+		"angular",
+		"directive"
+	],
+	"author": "Scukerman <nngoblin@gmail.com>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/OutcomeBet/angular-balance-changer/issues"
+	},
+	"homepage": "https://github.com/OutcomeBet/angular-balance-changer#readme",
+	"dependencies": {
+		"gulp": "^3.9.1",
+		"gulp-ng-annotate": "^2.0.0",
+		"gulp-rename": "^1.2.2",
+		"gulp-uglify": "^2.0.0"
+	}
+}

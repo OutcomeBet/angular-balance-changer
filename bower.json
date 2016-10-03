@@ -1,0 +1,27 @@
+{
+	"name": "angular-balance-changer",
+	"version": "1.0.0",
+	"authors": [
+		"Scukerman <nngoblin@gmail.com>"
+	],
+	"description": "C2 BackOffice angular component for changing balance",
+	"keywords": [
+		"angular",
+		"balance",
+		"angular",
+		"directive"
+	],
+	"license": "MIT",
+	"homepage": "https://github.com/OutcomeBet/angular-balance-changer",
+	"private": true,
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	],
+	"dependencies": {
+		"angular": "~1.5.8"
+	}
+}
