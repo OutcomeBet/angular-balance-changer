@@ -3,12 +3,20 @@
 
 	m.factory('BalanceChanger', [function() {
 		return {
-			model: {},
 			balanceField: '',
 			method: '',
-			methodPkField: '',
 			type: null,
-			amount: 0
+			amount: 0,
+			params: {
+				object: {
+					type: null,
+					model: {}
+				},
+				subject: {
+					type: null,
+					model: {}
+				}
+			}
 		};
 	}]);
 
@@ -25,15 +33,26 @@
 
 				ngModel.$render = function() {
 					$scope.model = ngModel.$viewValue;
-				}
+				};
 
 				$scope.openModal = function($event, type) {
-					bc.model = $scope.model;
-					bc.balanceField = $scope.balanceField;
 					bc.method = attrs.method || 'Cashier.Player.Balance.change';
-					bc.methodPkField = attrs.methodPkField || 'playerId';
+					bc.balanceField = $scope.balanceField;
 					bc.type = type;
+
 					bc.amount = 0;
+					bc.params = angular.extend({
+						amount: 0,
+						object: {
+							type: null,
+							model: {}
+						},
+						subject: {
+							type: null,
+							model: {}
+						}
+					}, $scope.$eval(attrs.params));
+					bc.params.subject.model = $scope.model;
 
 					$('#balance-changer-modal').modal('toggle');
 				};
@@ -49,24 +68,49 @@
 
 				$scope.change = function() {
 					if(bc.amount <= 0) {
-						$el.modal('toggle');
+						Alert.Big.Simple.Error('Amount has to be positive and greater than zero.');
 						return;
 					}
 
-					var value = Math.abs(bc.amount);
-					if(bc.type === 'withdraw') {
-						value = -value
+					var params = {
+						amount: bc.amount
+					};
+
+					var responseBalanceField = '';
+
+					if(bc.params.method === 'Cashier.BankGroup.Transaction.moveMoney') {
+						switch(bc.type) {
+							case 'deposit':
+								params.from = [bc.params.object.type, objPath(bc.params.object.model, 'id')];
+								params.to = [bc.params.subject.type, objPath(bc.params.subject.model, 'id')];
+
+								responseBalanceField = 'toBalanceAfter';
+								break;
+							case 'withdraw':
+								params.from = [bc.params.subject.type, objPath(bc.params.subject.model, 'id')];
+								params.to = [bc.params.object.type, objPath(bc.params.object.model, 'id')];
+
+								responseBalanceField = 'fromBalanceAfter';
+								break;
+							default:
+								Alert.Big.Simple.Error('Undefined transaction type.');
+						}
+					} else {
+						Alert.Big.Simple.Error('Undefined method.');
 					}
 
-					var params = { amount: value };
-					params[bc.methodPkField] = bc.model.id;
+					Remote.call(bc.params.method, params).then(function(data) {
+						var balanceAfter = objPath(data, responseBalanceField);
+						if(balanceAfter === undefined) {
+							Alert.Big.Simple.Error('Undefined balance field.');
+						} else {
+							safeApply($scope, function() {
+								bc.params.subject.model[bc.balanceField] = balanceAfter;
+							});
+						}
 
-					Remote.call(bc.method, params).then(function(data) {
-						safeApply($scope, function() {
-							bc.model[bc.balanceField] = data.balanceAfter;
-						});
 						$el.modal('toggle');
-					}).then(Alert.Small.Simple.Success);
+					}).then(Alert.Small.Simple.Success, Alert.Big.Simple.Error);
 				};
 			}
 		};
