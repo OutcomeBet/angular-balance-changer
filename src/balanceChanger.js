@@ -40,7 +40,7 @@
 					bc.balanceField = $scope.balanceField;
 					bc.type = type;
 
-					bc.amount = 0;
+					bc.amount = null;
 					bc.params = angular.extend({
 						amount: 0,
 						object: {
