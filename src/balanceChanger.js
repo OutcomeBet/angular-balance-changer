@@ -26,6 +26,7 @@
 					buttons: {w: 1, d: 1, ss: 0},
 					object: {type: 'bankGroup'},
 					ssDirection: 'win2bet',
+					bonus: null,
 				});
 
 				// determine balance field
@@ -102,6 +103,10 @@
 					params.from = [$ctrl.model.object.type, objPath($ctrl.model.object.model, 'id')];
 					params.to = [$ctrl.model.subject.type, objPath($ctrl.model.subject.model, 'id')];
 
+					if($ctrl.model.bonus.id) {
+						params.withDepositBonusId = $ctrl.model.bonus.id;
+					}
+
 					responseBalanceField = 'toBalanceAfter';
 					break;
 				case 'withdraw':
@@ -135,6 +140,40 @@
 
 			$ctrl.cancel = () => {
 				$ctrl.dismiss();
+			};
+
+			// bonuses functions
+			$ctrl.bonusValue = () => {
+				const bonus = $ctrl.model.bonus;
+				const amount = $ctrl.model.amount || 0;
+
+				if(bonus.bonus_sum != null) {
+					return parseInt(amount * bonus.bonus_percent / 10000);
+				} if(bonus.bonus_percent != null) {
+					return amount * bonus.bonus_percent / 10000;
+				} else {
+					Alert.Big.Simple.Error('Bonus is broken.');
+					return 0;
+				}
+			};
+
+			$ctrl.wagerValue = () => {
+				const bonus = $ctrl.model.bonus;
+				const amount = $ctrl.model.amount || 0;
+
+				if(bonus.bonus_sum != null) {
+					return parseInt(amount * bonus.bonus_percent / 10000);
+				} if(bonus.bonus_percent != null) {
+					return parseInt(amount * bonus.bonus_percent / 10000) * bonus.wager_coefficient / 10000;
+				} else {
+					Alert.Big.Simple.Error('Bonus is broken.');
+					return 0;
+				}
+			};
+
+			$ctrl.totalValue = () => {
+				const amount = $ctrl.model.amount || 0;
+				return amount + this.bonusValue();
 			};
 		},
 	})
