@@ -103,7 +103,7 @@
 					params.from = [$ctrl.model.object.type, objPath($ctrl.model.object.model, 'id')];
 					params.to = [$ctrl.model.subject.type, objPath($ctrl.model.subject.model, 'id')];
 
-					if($ctrl.model.bonus.id) {
+					if(objPath($ctrl.model, 'bonus.id')) {
 						params.withDepositBonusId = $ctrl.model.bonus.id;
 					}
 
