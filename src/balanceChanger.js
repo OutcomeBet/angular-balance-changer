@@ -27,6 +27,7 @@
 					object: {type: 'bankGroup'},
 					ssDirection: 'win2bet',
 					bonus: null,
+					balanceType: null,
 				});
 
 				// determine balance field
@@ -63,6 +64,8 @@
 					if(type === 'ss') {
 						component = 'balanceChangerSweepstakesComponent';
 						model.type = model.ssDirection;
+					} else if(model.balanceType === 'bonusBalance' || model.balanceType === 'wagerCounter') {
+						component = 'balanceChangerBWComponent';
 					}
 
 					// open modal
@@ -212,6 +215,70 @@
 							subject.model.balanceWin = objPath(data, 'balanceWin');
 						} else {
 							Alert.Big.Simple.Error('Unknown field. Nothing to update.');
+						}
+
+						$ctrl.close();
+					})
+					.then(Alert.Small.Simple.Success, Alert.Big.Simple.Error);
+			};
+
+			$ctrl.cancel = () => {
+				$ctrl.dismiss();
+			};
+		},
+	})
+	.component('balanceChangerBWComponent', {
+		templateUrl: `${VIEW_PATH}/partials/balance-changer/modal-bw.html`,
+		bindings: {
+			close: '&',
+			dismiss: '&',
+			resolve: '=',
+		},
+		controller(Remote, Alert) {
+			_.extend(this, this.resolve);
+			const $ctrl = this;
+
+			$ctrl.ok = () => {
+				if($ctrl.model.amount <= 0) {
+					return Alert.Big.Simple.Error('Amount has to be positive and greater than zero.');
+				}
+
+				const params = {
+					playerId: objPath($ctrl.model.subject.model, 'id'),
+					wagerAmount: 0,
+					bonusAmount: 0,
+					changeBalance: false,
+				};
+
+				const amount = $ctrl.model.type === 'deposit' ? $ctrl.model.amount : -$ctrl.model.amount;
+				let responseBalanceField = null;
+
+				switch($ctrl.model.balanceType) {
+				case 'bonusBalance':
+					params.bonusAmount = amount;
+					responseBalanceField = 'bonusBalanceAfter';
+					break;
+
+				case 'wagerCounter':
+					params.wagerAmount = amount;
+					responseBalanceField = 'wagerCounterAfter';
+					break;
+
+				default:
+					return Alert.Big.Simple.Error('Undefined balance type.');
+				}
+
+				const subject = $ctrl.model.subject;
+				const balanceField = $ctrl.model.balanceField;
+
+				Remote.call('Cashier.Player.Bonus.Balance.change', params)
+					.then(function(data) {
+						const balanceAfter = objPath(data, responseBalanceField);
+
+						if(balanceAfter === undefined) {
+							Alert.Big.Simple.Error('Undefined balance field.');
+						} else {
+							$ctrl.model.subject.model[balanceField] = balanceAfter;
 						}
 
 						$ctrl.close();
