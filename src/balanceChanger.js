@@ -90,6 +90,8 @@
 			_.extend(this, this.resolve);
 			const $ctrl = this;
 
+			$ctrl.processing = false;
+
 			$ctrl.ok = () => {
 				if(_.isUndefined($ctrl.model.amount) || $ctrl.model.amount <= 0) {
 					return Alert.Big.Simple.Error('Amount has to be positive and greater than zero.');
@@ -126,6 +128,7 @@
 				const subject = $ctrl.model.subject;
 				const balanceField = $ctrl.model.balanceField;
 
+				$ctrl.processing = true;
 				Remote.call('Cashier.BankGroup.Transaction.moveMoney', params)
 					.then(function(data) {
 						const balanceAfter = objPath(data, responseBalanceField);
@@ -138,7 +141,10 @@
 
 						$ctrl.close();
 					})
-					.then(Alert.Small.Simple.Success, Alert.Big.Simple.Error);
+					.then(Alert.Small.Simple.Success, Alert.Big.Simple.Error)
+					.finally(() => {
+						$ctrl.processing = false;
+					});
 			};
 
 			$ctrl.cancel = () => {
@@ -191,6 +197,8 @@
 			_.extend(this, this.resolve);
 			const $ctrl = this;
 
+			$ctrl.processing = false;
+
 			$ctrl.ok = () => {
 				if(_.isUndefined($ctrl.model.amount) || $ctrl.model.amount <= 0) {
 					return Alert.Big.Simple.Error('Amount has to be positive and greater than zero.');
@@ -204,6 +212,7 @@
 
 				const subject = $ctrl.model.subject;
 
+				$ctrl.processing = true;
 				Remote.call('Cashier.Player.Balance.sweepstakesWin2Bet', params)
 					.then(function(data) {
 						if(subject.field.ss) {
@@ -219,7 +228,10 @@
 
 						$ctrl.close();
 					})
-					.then(Alert.Small.Simple.Success, Alert.Big.Simple.Error);
+					.then(Alert.Small.Simple.Success, Alert.Big.Simple.Error)
+					.finally(() => {
+						$ctrl.processing = false;
+					});
 			};
 
 			$ctrl.cancel = () => {
@@ -237,6 +249,8 @@
 		controller(Remote, Alert) {
 			_.extend(this, this.resolve);
 			const $ctrl = this;
+
+			$ctrl.processing = false;
 
 			$ctrl.ok = () => {
 				if(_.isUndefined($ctrl.model.amount) || $ctrl.model.amount <= 0) {
@@ -271,6 +285,7 @@
 				const subject = $ctrl.model.subject;
 				const balanceField = $ctrl.model.balanceField;
 
+				$ctrl.processing = true;
 				Remote.call('Cashier.Player.Bonus.Balance.change', params)
 					.then(function(data) {
 						const balanceAfter = objPath(data, responseBalanceField);
@@ -283,7 +298,10 @@
 
 						$ctrl.close();
 					})
-					.then(Alert.Small.Simple.Success, Alert.Big.Simple.Error);
+					.then(Alert.Small.Simple.Success, Alert.Big.Simple.Error)
+					.finally(() => {
+						$ctrl.processing = false;
+					});
 			};
 
 			$ctrl.cancel = () => {
