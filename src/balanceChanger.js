@@ -91,7 +91,7 @@
 			const $ctrl = this;
 
 			$ctrl.ok = () => {
-				if($ctrl.model.amount <= 0) {
+				if(_.isUndefined($ctrl.model.amount) || $ctrl.model.amount <= 0) {
 					return Alert.Big.Simple.Error('Amount has to be positive and greater than zero.');
 				}
 
@@ -192,7 +192,7 @@
 			const $ctrl = this;
 
 			$ctrl.ok = () => {
-				if($ctrl.model.amount <= 0) {
+				if(_.isUndefined($ctrl.model.amount) || $ctrl.model.amount <= 0) {
 					return Alert.Big.Simple.Error('Amount has to be positive and greater than zero.');
 				}
 
@@ -239,7 +239,7 @@
 			const $ctrl = this;
 
 			$ctrl.ok = () => {
-				if($ctrl.model.amount <= 0) {
+				if(_.isUndefined($ctrl.model.amount) || $ctrl.model.amount <= 0) {
 					return Alert.Big.Simple.Error('Amount has to be positive and greater than zero.');
 				}
 
