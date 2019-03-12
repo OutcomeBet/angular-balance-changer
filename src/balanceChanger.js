@@ -151,6 +151,30 @@
 				$ctrl.dismiss();
 			};
 
+			$ctrl.allMoney = (flag) => {
+				if(flag) {
+					$ctrl.processing = true;
+					
+					// request balance
+					Remote.Cashier.Player.list({filter: {id: $ctrl.model.subject.model.id}})
+						.then((data) => {
+							if(data.count > 1) {
+								Alert.Big.Simple.Warning('Something went wrong (Error code #2)');
+								return;
+							}
+			
+							// fill out amount field with balance
+							$ctrl.model.amount = data.list[0].balance;
+						})
+						.finally(() => {
+							$ctrl.processing = false;
+						});
+				} else {
+					// reset amount field to zero
+					$ctrl.model.amount = 0;
+				}
+			};
+
 			// bonuses functions
 			$ctrl.bonusValue = () => {
 				const bonus = $ctrl.model.bonus;
