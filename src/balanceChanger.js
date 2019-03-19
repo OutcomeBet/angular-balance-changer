@@ -22,6 +22,7 @@
 
 				// set defaults
 				_.defaults(model, {
+					amount: 0,
 					method: 'Cashier.BankGroup.Transaction.moveMoney',
 					buttons: {w: 1, d: 1, ss: 0},
 					object: {type: 'bankGroup'},
@@ -92,6 +93,14 @@
 
 			$ctrl.processing = false;
 
+			$ctrl.validateBonus = () => {
+				const depositMin = objPath($ctrl.model, 'bonus.deposit_min');
+				const depositMax = objPath($ctrl.model, 'bonus.deposit_max');
+				const amount = $ctrl.model.amount;
+
+				return amount >= depositMin && amount <= depositMax;
+			};
+
 			$ctrl.ok = () => {
 				if(_.isUndefined($ctrl.model.amount) || $ctrl.model.amount <= 0) {
 					return Alert.Big.Simple.Error('Amount has to be positive and greater than zero.');
@@ -108,8 +117,8 @@
 					params.from = [$ctrl.model.object.type, objPath($ctrl.model.object.model, 'id')];
 					params.to = [$ctrl.model.subject.type, objPath($ctrl.model.subject.model, 'id')];
 
-					if(objPath($ctrl.model, 'bonus.id')) {
-						params.withDepositBonusId = $ctrl.model.bonus.id;
+					if(objPath($ctrl.model, 'bonus.bonus_id') && $ctrl.validateBonus()) {
+						params.bonusId = $ctrl.model.bonus.bonus_id;
 					}
 
 					responseBalanceField = 'toBalanceAfter';
@@ -154,7 +163,7 @@
 			$ctrl.allMoney = (flag) => {
 				if(flag) {
 					$ctrl.processing = true;
-					
+
 					// request balance
 					Remote.Cashier.Player.list({filter: {id: $ctrl.model.subject.model.id}})
 						.then((data) => {
