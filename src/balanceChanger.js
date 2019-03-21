@@ -91,7 +91,7 @@
 			_.extend(this, this.resolve);
 			const $ctrl = this;
 
-			$ctrl.processing = false;
+			$ctrl.processing = true;
 
 			$ctrl.validateBonus = () => {
 				const depositMin = objPath($ctrl.model, 'bonus.deposit_min');
@@ -161,28 +161,40 @@
 			};
 
 			$ctrl.allMoney = (flag) => {
-				if(flag) {
+				if(this.model.subject.type === 'playerId') {
 					$ctrl.processing = true;
 
-					// request balance
-					Remote.Cashier.Player.list({filter: {id: $ctrl.model.subject.model.id}})
+					const bankGroupId = this.model.subject.model.bank_group_id;
+					const playerId = this.model.subject.model.id;
+	
+					// request available balance
+					Remote.Cashier.Player.Balance.get({bankGroupId, playerId})
 						.then((data) => {
-							if(data.count > 1) {
-								Alert.Big.Simple.Warning('Something went wrong (Error code #2)');
-								return;
+							$ctrl.model.subject.balance = {
+								available: data.balance,
+								activeBonus: data.active_bonus,
+								wager: data.wager,
+							};
+
+							if(flag) {
+								// fill out the amount field with balance
+								$ctrl.model.amount = data.balance;
+							} else {
+								if(angular.isNumber($ctrl.model.amount)) {
+									// reset amount field to zero
+									$ctrl.model.amount = 0;
+								}
 							}
-			
-							// fill out amount field with balance
-							$ctrl.model.amount = data.list[0].balance;
 						})
 						.finally(() => {
 							$ctrl.processing = false;
 						});
 				} else {
-					// reset amount field to zero
-					$ctrl.model.amount = 0;
+					$ctrl.processing = false;
 				}
 			};
+
+			$ctrl.allMoney(false);
 
 			// bonuses functions
 			$ctrl.bonusValue = () => {
