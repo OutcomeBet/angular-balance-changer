@@ -87,7 +87,7 @@
 			dismiss: '&',
 			resolve: '=',
 		},
-		controller(Remote, Alert) {
+		controller($scope, Remote, Alert, $filter) {
 			_.extend(this, this.resolve);
 			const $ctrl = this;
 
@@ -150,9 +150,20 @@
 
 						$ctrl.close();
 					})
-					.then(Alert.Small.Simple.Success, Alert.Big.Simple.Error)
+					.then(Alert.Small.Simple.Success, (error) => {
+						const wagerCoins = this.model.subject.model.wager;
+						if(wagerCoins > 0) {
+							const wager = $filter('nnCurrency')(wagerCoins);
+							error += "<br>The player's current wager is: " + wager;
+						}
+
+						return Alert.Big.Simple.Error(error);
+					})
 					.finally(() => {
-						$ctrl.processing = false;
+						// for an unknown reason it has to be like this
+						$scope.$apply(() => {
+							$ctrl.processing = false;
+						});
 					});
 			};
 
