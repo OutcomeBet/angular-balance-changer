@@ -177,7 +177,7 @@
 
 					const bankGroupId = this.model.subject.model.bank_group_id;
 					const playerId = this.model.subject.model.id;
-	
+
 					// request available balance
 					Remote.Cashier.Player.Balance.get({bankGroupId, playerId})
 						.then((data) => {
@@ -317,6 +317,7 @@
 					playerId: objPath($ctrl.model.subject.model, 'id'),
 					wagerAmount: 0,
 					bonusAmount: 0,
+					bonusLimit:0,
 					changeBalance: false,
 				};
 
@@ -327,6 +328,11 @@
 				case 'bonusBalance':
 					params.bonusAmount = amount;
 					responseBalanceField = 'bonusBalanceAfter';
+					break;
+
+				case 'bonusLimit':
+					params.bonusLimit = amount;
+					responseBalanceField = 'bonusLimitAfter';
 					break;
 
 				case 'wagerCounter':
