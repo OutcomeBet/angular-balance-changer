@@ -64,7 +64,7 @@
 					if(type === 'ss') {
 						component = 'balanceChangerSweepstakesComponent';
 						model.type = model.ssDirection;
-					} else if(model.balanceType === 'bonusBalance' || model.balanceType === 'wagerCounter') {
+					} else if(model.balanceType === 'bonusBalance' || model.balanceType === 'bonusLimit' || model.balanceType === 'wagerCounter') {
 						component = 'balanceChangerBWComponent';
 					}
 
